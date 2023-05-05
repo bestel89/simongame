@@ -11,18 +11,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&family=Ubuntu:wght@700&display=swap" rel="stylesheet">
     <title>simon</title>
 </head>
-<body>
-    <div id='board'>
-        <div id='red'></div>
-        <div id='grn'></div>
-        <div id='yel'></div>
-        <div id='blu'></div>
+<body class="flex-ctr">
+    <h1>simon</h1>
+    <main>
+        <section id="board">
+            <div id='red' class="clrbtns"></div>
+            <div id='grn' class="clrbtns"></div>
+            <div id='yel' class="clrbtns"></div>
+            <div id='blu' class="clrbtns"></div>
+            <div id="ctr"></div>
+        </section>
     </div>
-        <div id='ctrcir'>
-        <h1>simon</h2>
+    </main>
+    <section id="gameControls">
         <button>PLAY GAME</button>
         <span class='counts'>count: <span id='counter'>0</span></span>
         <span class='counts'>high score: <span id='highScore'>0</span></span>
-    </div>
+    </section>
 </body>
 </html>
