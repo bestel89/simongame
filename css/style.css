@@ -1,0 +1,125 @@
+* {
+    box-sizing: border-box;
+    --main-bg-color: black;
+    --red: #DA4322;
+    --green: #148F3A;
+    --yellow: #F5E827;
+    --blue: #138ACC;
+    --white: white;
+    font-family: 'Fira Sans', sans-serif;
+  }
+  
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: var(--main-bg-color);
+  }
+  
+  #board {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    height: 100vmin;
+    width: 100vmin;
+    /* border: 1px solid red; */
+    gap: 2.5vmin;
+    transform: translateX(15vmin);
+  }
+  
+  #red {
+    background-color: var(--red);
+    border-radius: 100% 0 0 0;
+    height: 30vmin;
+    width: 30vmin;
+    order: 1;
+  }
+  
+  #grn {
+    background-color: var(--green);
+    border-radius: 0 100% 0 0;
+    height: 30vmin;
+    width: 30vmin;
+    order: 2;
+  }
+  
+  #yel {
+    background-color: var(--yellow);
+    border-radius: 0 0 100% 0;
+    height: 30vmin;
+    width: 30vmin;
+    order: 4;
+  }
+  
+  #blu {
+    background-color: var(--blue);
+    border-radius: 0 0 0 100%;
+    height: 30vmin;
+    width: 30vmin;
+    order: 3;
+  }
+  
+  #red:hover {
+    transform: scale(0.97);
+    transition: transform 100ms ease-in;
+  }
+  
+  #grn:hover {
+    transform: scale(0.97);
+    transition: transform 100ms ease-in;
+  }
+  
+  #yel:hover {
+    transform: scale(0.97);
+    transition: transform 100ms ease-in;
+  }
+  
+  #blu:hover {
+    transform: scale(0.97);
+    transition: transform 100ms ease-in;
+  }
+  
+  #ctrcir {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+    border-radius: 50%;
+    border: 2.5vmin solid black;
+    height: 30vmin;
+    width: 30vmin;
+    transform: translateX(-32vmin);
+  }
+  
+  h1 {
+    font-size: 6vmin;
+    margin-top: 0vmin;
+    margin-bottom: 0vmin;
+    font-family: 'Ubuntu', sans-serif;
+  }
+  
+  button {
+    text-align: center;
+    width: 12vmin;
+    height: 3vmin;
+    background-color: darkgrey;
+    color: var(--white);
+    border: 1px solid grey;
+    border-radius: 1vmin 1vmin 1vmin 1vmin;
+  }
+  
+  button:hover {
+    transform: scale(0.97);
+    transition: transform 50ms ease-in;
+    color: white;
+    background-color: grey;
+  }
+  
+  .counts {
+    margin-top: 1vmin;
+  }
