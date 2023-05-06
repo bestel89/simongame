@@ -1,10 +1,10 @@
 /*----- constants -----*/
 const btnLookup = {
-    red: {clickedClr: '--redL'},
-    grn: {clickedClr: '--greenL'},
-    yel: {clickedClr: '--yellowL'},
-    blu: {clickedClr: '--blueL'},
-  };
+    0: {color: 'red'},
+    1: {color: 'grn'},
+    2: {color: 'yel'},
+    3: {color: 'blu'},
+};
 
 const sounds = {
     red: 'sounds/btn1.mp3',
@@ -16,15 +16,14 @@ const sounds = {
 }
 
 /*----- app's state (variables) -----*/
-
+let sequenceArr; // to be initialised to an empty array to hold the random sequence
+let turn;
 
 /*----- cached element references -----*/
-const boardEl = document.getElementById('board')
-const redEl = document.getElementById('red');
-const grnEl = document.getElementById('grn');
-const yelEl = document.getElementById('yel');
-const bluEl = document.getElementById('blu');
+const boardEl = document.getElementById('board');
 const audioPlayer = new Audio();
+const gameBtnEl = document.querySelector('button');
+const messageEl = document.getElementById('message');
 
 //Audio controls:
 // audioPlayer.volume = .5;
@@ -33,6 +32,65 @@ const audioPlayer = new Audio();
 
 
 /*----- functions -----*/
+
+//initialise all state and then call compSequence()
+function init() {
+    sequenceArr = [];
+    turn = -1; //initialise to computer turn
+    render(); //render messages only atm
+    compSequence(sequenceArr); //run the compsequence
+}
+
+function render() {
+    renderMessages();
+}
+
+function renderMessages() {
+    if (turn === -1) {
+        messageEl.innerText = 'Computer turn...'
+    } else if (turn === 1) {
+        messageEl.innerText = 'Player turn...'
+    } else if (turn === null) {
+        messageEl.innerText = 'GAME OVER'
+    }
+}
+
+function compSequence(sequenceArr) {
+    //takes the sequence array, adds a new number
+    const newIdxItem = getNumUpTo3();
+    sequenceArr.push(newIdxItem);
+    //renders the sequence for the play to visualise
+    playSequence(sequenceArr);
+    //change turn to player
+    // setTimeout(() => {
+    //     turn = turn*-1;
+    //     render();
+    //     console.log(`there has been a delay of ${500*sequenceArr.length}. turn= ${turn}.`)
+    // }, 500*sequenceArr.length);
+    //changes the turn to the player turn
+    
+}
+
+function playSequence(arr) {
+    //for each number in the sequence, convert it to a color and render the correct special FX
+    let btnToVis;
+    for (let i=0; i<arr.length; i++) {
+        btnToVis = document.getElementById(btnLookup[arr[i]].color);
+        playSound(btnToVis.id);
+        btnToVis.id = `${btnToVis.id}Clicked`;
+        setTimeout(() => {
+            // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
+            const trimmedId = btnToVis.id.slice(0, 3);
+            btnToVis.id = trimmedId;
+            // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
+        }, 500);
+    }
+}
+
+function getNumUpTo3() {
+  return Math.floor(Math.random() * 4);
+}
+
 function handleClick(evt) {
     //guards to prevent improper clicking
     if (evt.target.classList.value !== 'clrbtns') return;
@@ -54,7 +112,6 @@ function renderBtnClr(evt) {
 
 function handleSound(evt) {
     const clickedBtn = document.getElementById(`${evt.target.id}`)
-    console.log(sounds[clickedBtn.id]);
     playSound(clickedBtn.id);
 }
 
@@ -64,4 +121,5 @@ function playSound(name) {
 }
 
 /*----- eventListeners -----*/
-boardEl.addEventListener('mousedown', handleClick)
+boardEl.addEventListener('mousedown', handleClick);
+gameBtnEl.addEventListener('click', init);

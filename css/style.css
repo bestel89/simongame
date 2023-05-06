@@ -14,7 +14,7 @@
     --greenD: #076925;
     --yellowD: #E5D704;
     --blueD: #036DA8;
-    --white: white;
+    --white: #ECECEC;
   }
   
   body {
@@ -111,6 +111,7 @@
     border-radius: 100% 0 0 0;
     grid-column: 1 / span 2;
     grid-row: 1 / span 2;
+    box-shadow: -0.5vmin -0.5vmin 1vmin 1vmin #3C3C3C;
   }
   
   #grnClicked {
@@ -118,6 +119,7 @@
     border-radius: 0 100% 0 0;
     grid-column: 3 / span 2;
     grid-row: 1 / span 2;
+    box-shadow: 0.5vmin -0.5vmin 1vmin 1vmin #3C3C3C;
   }
   
   #yelClicked {
@@ -125,6 +127,7 @@
     border-radius: 0 0 100% 0;
     grid-column: 3 / span 2;
     grid-row: 3 / span 2;
+    box-shadow: 0.5vmin 0.5vmin 1vmin 1vmin #3C3C3C;
   }
   
   #bluClicked {
@@ -132,12 +135,22 @@
     border-radius: 0 0 0 100%;
     grid-column: 1 / span 2;
     grid-row: 3 / span 2;
+    box-shadow: -0.5vmin 0.5vmin 1vmin 1vmin #3C3C3C;
   }
   
   h1 {
     color: white;
     font-size: 6vmin;
     font-family: 'Ubuntu', sans-serif;
+    margin-top: 1vmin;
+    margin-bottom: 1vmin;
+  }
+
+  h2 {
+    color: white;
+    font-size: 3vmin;
+    margin-top: 1vmin;
+    margin-bottom: 3vmin;
   }
 
   span {
