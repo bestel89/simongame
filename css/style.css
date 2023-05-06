@@ -2,10 +2,18 @@
     font-family: 'Fira Sans', sans-serif;
     box-sizing: border-box;
     --main-bg-color: black;
-    --red: #DA4322;
-    --green: #148F3A;
-    --yellow: #F5E827;
-    --blue: #138ACC;
+    --redN: #DA4322;
+    --greenN: #148F3A;
+    --yellowN: #F5E827;
+    --blueN: #138ACC;
+    --redL: #F97A5E;
+    --greenL: #61D886;
+    --yellowL: #F9EF64;
+    --blueL: #56B8EF;
+    --redD: #B92B0C;
+    --greenD: #076925;
+    --yellowD: #E5D704;
+    --blueD: #036DA8;
     --white: white;
   }
   
@@ -46,35 +54,81 @@
     /* border: 1px solid blue; */
   }
 
-  #board > .clrbtns:hover {
-    transform: scale(0.97);
-    transition: transform 100ms ease-in;
-    transform: perspective(500px) translateZ(-10px);
+  
+    #red {
+      background-color: var(--redN);
+      border-radius: 100% 0 0 0;
+      grid-column: 1 / span 2;
+      grid-row: 1 / span 2;
+    }
+    
+    #grn {
+        background-color: var(--greenN);
+        border-radius: 0 100% 0 0;
+        grid-column: 3 / span 2;
+        grid-row: 1 / span 2;
+    }
+    
+    #yel {
+        background-color: var(--yellowN);
+        border-radius: 0 0 100% 0;
+        grid-column: 3 / span 2;
+        grid-row: 3 / span 2;
+    }
+    
+    #blu {
+        background-color: var(--blueN);
+        border-radius: 0 0 0 100%;
+        grid-column: 1 / span 2;
+        grid-row: 3 / span 2;
+    }
+    
+    #board > .clrbtns:hover {
+      /* transform: scale(0.99);
+      transition: transform 50ms ease-in;
+      transform: perspective(500px) translateZ(-10px); */
+      cursor: pointer;
+    }
+    
+  #red:hover {
+    background-color: var(--redD);
   }
-
-  #red {
-    background-color: var(--red);
+  
+  #grn:hover {
+    background-color: var(--greenD);
+  }
+  
+  #yel:hover {
+    background-color: var(--yellowD);
+  }
+  
+  #blu:hover {
+    background-color: var(--blueD);
+  }
+  
+  #redClicked {
+    background-color: var(--redL);
     border-radius: 100% 0 0 0;
     grid-column: 1 / span 2;
     grid-row: 1 / span 2;
   }
   
-  #grn {
-    background-color: var(--green);
+  #grnClicked {
+    background-color: var(--greenL);
     border-radius: 0 100% 0 0;
     grid-column: 3 / span 2;
     grid-row: 1 / span 2;
   }
   
-  #yel {
-    background-color: var(--yellow);
+  #yelClicked {
+    background-color: var(--yellowL);
     border-radius: 0 0 100% 0;
     grid-column: 3 / span 2;
     grid-row: 3 / span 2;
   }
   
-  #blu {
-    background-color: var(--blue);
+  #bluClicked {
+    background-color: var(--blueL);
     border-radius: 0 0 0 100%;
     grid-column: 1 / span 2;
     grid-row: 3 / span 2;
@@ -129,6 +183,10 @@
     grid-column: 2 / span 2;
     grid-row: 2 / span 2;
     transform: perspective(500px) translateZ(5px);
+  }
+
+  .pink {
+    background-color: pink;
   }
 
 
