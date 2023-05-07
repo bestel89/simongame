@@ -34,15 +34,27 @@ const messageEl = document.getElementById('message');
 /*----- functions -----*/
 
 //initialise all state and then call compSequence()
+init();
+
 function init() {
     sequenceArr = [];
-    turn = -1; //initialise to computer turn
-    render(); //render messages only atm
+    turn = null; //initialise to computer turn
+}
+
+function gameStart(sequenceArr) {
+    turn = -1
+    render(sequenceArr); //render messages only atm
     compSequence(sequenceArr); //run the compsequence
 }
 
-function render() {
+function render(arr) {
     renderMessages();
+    currentState(arr);
+}
+
+function currentState(arr) {
+    console.log(arr);
+    console.log(turn);
 }
 
 function renderMessages() {
@@ -61,29 +73,29 @@ function compSequence(sequenceArr) {
     sequenceArr.push(newIdxItem);
     //renders the sequence for the play to visualise
     playSequence(sequenceArr);
-    //change turn to player
-    // setTimeout(() => {
-    //     turn = turn*-1;
-    //     render();
-    //     console.log(`there has been a delay of ${500*sequenceArr.length}. turn= ${turn}.`)
-    // }, 500*sequenceArr.length);
-    //changes the turn to the player turn
-    
+    //change turn to player and calls render
+    setTimeout(() => {
+        turn = 1;
+        // console.log(`turn: ${turn}`)
+        render();
+    }, 1000*sequenceArr.length);    
 }
 
 function playSequence(arr) {
     //for each number in the sequence, convert it to a color and render the correct special FX
     let btnToVis;
     for (let i=0; i<arr.length; i++) {
-        btnToVis = document.getElementById(btnLookup[arr[i]].color);
-        playSound(btnToVis.id);
-        btnToVis.id = `${btnToVis.id}Clicked`;
-        setTimeout(() => {
-            // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
-            const trimmedId = btnToVis.id.slice(0, 3);
-            btnToVis.id = trimmedId;
-            // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
-        }, 500);
+        setTimeout(function timer() {
+            btnToVis = document.getElementById(btnLookup[arr[i]].color);
+            playSound(btnToVis.id);
+            btnToVis.id = `${btnToVis.id}Clicked`;
+            setTimeout(() => {
+                // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
+                const trimmedId = btnToVis.id.slice(0, 3);
+                btnToVis.id = trimmedId;
+                // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
+            }, 500);
+        }, i * 1000);
     }
 }
 
@@ -120,6 +132,17 @@ function playSound(name) {
     audioPlayer.play();
 }
 
+
+// function test() {
+//     for (let i = 1; i < 10; i++) {
+//         setTimeout(function timer() {
+//           console.log("hello world");
+//         }, i * 1000);
+//       }
+// }
+
+// test();
+
 /*----- eventListeners -----*/
 boardEl.addEventListener('mousedown', handleClick);
-gameBtnEl.addEventListener('click', init);
+gameBtnEl.addEventListener('click', gameStart);
