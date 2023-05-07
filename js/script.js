@@ -27,12 +27,16 @@ const sounds = {
 let sequenceArr; // to be initialised to an empty array to hold the random sequence
 let turn;
 let playerArr;
+let playerCounter;
+let highScore;
 
 /*----- cached element references -----*/
 const boardEl = document.getElementById('board');
 const audioPlayer = new Audio();
 const gameBtnEl = document.querySelector('button');
 const messageEl = document.getElementById('message');
+const counterEl = document.getElementById('counter');
+const highScoreEl = document.getElementById('highScore');
 
 //Audio controls:
 // audioPlayer.volume = .5;
@@ -47,6 +51,9 @@ function init() {
     sequenceArr = [];
     playerArr = [];
     turn = -1; //initialise to comp's turn
+    playerCounter = 0;
+    highScore = 0;
+    updateCounter();
     render();
     compTurn(sequenceArr);
 }
@@ -62,7 +69,8 @@ function compTurn(arr) {
 }
 
 function render(arr) {
-    renderMessages();
+    renderStates();
+    changeBgColor();
     currentState(arr);
 }
 
@@ -71,13 +79,24 @@ function currentState(arr) {
     // console.log(turn);
 }
 
-function renderMessages() {
+function renderStates() {
+    gameBtnEl.innerText = 'RESTART';
     if (turn === -1) {
         messageEl.innerText = 'Computer turn...'
     } else if (turn === 1) {
         messageEl.innerText = 'Player turn...'
     } else if (turn === null) {
-        messageEl.innerText = 'GAME OVER! Click PLAY GAME to try again!'
+        messageEl.innerText = 'GAME OVER! Click RESTART to try again!'
+    }
+}
+
+function changeBgColor() {
+    if (turn === -1 || turn === 1) {
+        document.querySelector("body").style.transitionDuration = "3s";
+        document.querySelector('body').style.backgroundColor = '#001700'
+    } else if (turn === null) {
+        document.querySelector("body").style.transitionDuration = "1s";
+        document.querySelector('body').style.backgroundColor = '#A11800';
     }
 }
 
@@ -130,7 +149,7 @@ function handleClick(evt) {
     if (evt.target.classList.value !== 'clrbtns') return;
     //else if button is actually clicked...
     addToPlayerArr(evt);
-    //only compare the array if the player has clicked enough buttons
+    //compare array
     compareArr(sequenceArr, playerArr);
     handleSound(evt);
     renderBtnClr(evt);
@@ -145,20 +164,24 @@ function compareArr(sequenceArr, playerArr) {
     console.log(`sequenceArr: ${sequenceArr}`);
     console.log(`playerArr: ${playerArr}`);
     //guards - only compare the array if they are the same length
-    if (sequenceArr.length !== playerArr.length) return;
+    // if (sequenceArr.length !== playerArr.length) return;
     //compare the arrays
-    for (let i=1; i<=sequenceArr.length; i++) {
+    for (let i=0; i<sequenceArr.length; i++) {
         if (sequenceArr[i] !== playerArr[i]) {
             gameOver();
             rmPlayerClicking();
             console.log('a fired')
         } else if (sequenceArr[i] === playerArr[i]) {
-            console.log('b fired', i, sequenceArr.length)
-            if (i === sequenceArr.length) {
+            console.log(`b fired`)
+            if (sequenceArr.length !== playerArr.length) {
+                console.log(`c fired`)
+                return;
+            } else if (i+1 === sequenceArr.length) {
+                updateCounter();
                 rmPlayerClicking();
                 console.log(sequenceArr);
                 compTurn(sequenceArr);
-                console.log('c fired')
+                console.log('d fired')
             }
         };
     }
@@ -167,9 +190,35 @@ function compareArr(sequenceArr, playerArr) {
 
 function gameOver() {
     console.log('the game is over!!!!!!');
+    rmPlayerClicking();
     turn = null;
+    console.log(`player counter: ${playerCounter}`);
+    console.log(`highscore variable: ${highScore}`);
+    updateHighScore(playerCounter, highScore);
     render();
     // playSound('err');   //FIX THIS
+}
+
+function updateCounter() {
+    if (playerCounter+1 < sequenceArr.length) {
+        return;
+    } else if (turn === null || turn === -1) {
+        counterEl.innerText = 0;
+    } else {
+        playerCounter++;
+        highScore++;
+        counterEl.innerText = playerCounter;
+        if (turn === null) {
+            counterEl.innerText = 0;
+        }
+    }
+}
+
+function updateHighScore(playerCounter, highScore) {
+    if(playerCounter >= highScore) {
+        highScoreEl.innerText = playerCounter;
+        highScore = playerCounter;
+    }
 }
 
 function renderBtnClr(evt) {
@@ -185,7 +234,11 @@ function renderBtnClr(evt) {
 
 function handleSound(evt) {
     const clickedBtn = document.getElementById(`${evt.target.id}`)
-    playSound(clickedBtn.id);
+    if (turn !== null) {
+        playSound(clickedBtn.id);
+    } else if (turn === null) {
+        playSound('err');
+    }
 }
 
 function playSound(name) {
