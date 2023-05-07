@@ -19,8 +19,13 @@ const sounds = {
     'yel': 'sounds/btn3.mp3',
     'blu': 'sounds/btn4.mp3',
     'err': 'sounds/error.mp3',
-    'gst': '',
-    'gov': '',
+}
+
+const DIFFICULTY = {
+    'easy': {param1: 1000, param2: 500},
+    'normal': {param1: 1000*0.8, param2: 500*0.8},
+    'hard': {param1: 1000*0.6, param2: 500*0.6},
+    'vhard': {param1: 1000*0.4, param2: 500*0.4}
 }
 
 /*----- app's state (variables) -----*/
@@ -52,20 +57,21 @@ function init() {
     playerArr = [];
     turn = -1; //initialise to comp's turn
     playerCounter = 0;
-    highScore = 0;
+    if (highScore === undefined) {
+        highScore = 0;
+    } else {/*do nothing*/};
     updateCounter();
     render();
     compTurn(sequenceArr);
 }
 
 function compTurn(arr) {
-    console.log(`compTurn function fired`)
     setTimeout(() => {
         playerArr = [];
         turn = -1;
         render();
-        compSequence(arr);
-    }, 2000); //run the compsequence
+        compSequence(arr)
+    }, 2000); 
 }
 
 function render(arr) {
@@ -101,56 +107,51 @@ function changeBgColor() {
 }
 
 function compSequence(arr) {
-    console.log(`compSequence function fired`)
-    console.log(`sequence arr is: ${arr}`)
     //takes the sequence array, adds a new number
     const newIdxItem = getNumUpTo3();
     arr.push(newIdxItem);
+    //get difficulty level
+    const diffLevel = getDiffLevel(arr);
+    console.log(`difficulty level: ${diffLevel}`);
     //renders the sequence for the play to visualise
-    console.log(`sequence arr is: ${arr}`)
-    playSequence(arr);
-    console.log(`sequence arr is: ${arr}`)
+    playSequence(arr, diffLevel);
     //change turn to player and calls render
     setTimeout(() => {
         turn = 1;
-        // console.log(`turn: ${turn}`)
         render();
-    }, 1000*arr.length); 
+    }, DIFFICULTY[diffLevel].param1*arr.length); 
     addPlayerClicking();
-    console.log(`sequence arr is: ${arr}`)
+    console.log(`difficulty level: ${diffLevel}`);
 }
 
-function playSequence(arr) {
-    console.log(`playSequence function fired`)
-    //for each number in the sequence, convert it to a color and render the correct special FX
+function playSequence(arr, diffLevel) {
     let btnToVis;
+    diffLevel = getDiffLevel(arr);
+    console.log(`difficulty level: ${diffLevel}`);
     for (let i=0; i<arr.length; i++) {
+        console.log(DIFFICULTY[diffLevel].param1);
         setTimeout(function timer() {
             btnToVis = document.getElementById(btnLookup[arr[i]].color);
             playSound(btnToVis.id);
             btnToVis.id = `${btnToVis.id}Clicked`;
+            console.log(diffLevel);
             setTimeout(() => {
-                // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
                 const trimmedId = btnToVis.id.slice(0, 3);
                 btnToVis.id = trimmedId;
-                // console.log(`btnToVis ID is equal to ${btnToVis.id}`);
-            }, 500);
-        }, i * 1000);
+            }, DIFFICULTY[diffLevel].param2);
+        }, i * DIFFICULTY[diffLevel].param1);
     }
 }
 
-function getNumUpTo3() {
-  return Math.floor(Math.random() * 4);
-}
 
 function handleClick(evt) {
-    console.log(`handleClick function fired`)
     //guards to prevent improper clicking
     if (evt.target.classList.value !== 'clrbtns') return;
     //else if button is actually clicked...
     addToPlayerArr(evt);
     //compare array
     compareArr(sequenceArr, playerArr);
+    //render FX
     handleSound(evt);
     renderBtnClr(evt);
 };
@@ -160,28 +161,17 @@ function addToPlayerArr(evt) {
 }
 
 function compareArr(sequenceArr, playerArr) {
-    console.log(`compareArr function fired`);
-    console.log(`sequenceArr: ${sequenceArr}`);
-    console.log(`playerArr: ${playerArr}`);
-    //guards - only compare the array if they are the same length
-    // if (sequenceArr.length !== playerArr.length) return;
-    //compare the arrays
     for (let i=0; i<sequenceArr.length; i++) {
         if (sequenceArr[i] !== playerArr[i]) {
             gameOver();
-            rmPlayerClicking();
-            console.log('a fired')
+            return;
         } else if (sequenceArr[i] === playerArr[i]) {
-            console.log(`b fired`)
             if (sequenceArr.length !== playerArr.length) {
-                console.log(`c fired`)
                 return;
             } else if (i+1 === sequenceArr.length) {
                 updateCounter();
                 rmPlayerClicking();
-                console.log(sequenceArr);
                 compTurn(sequenceArr);
-                console.log('d fired')
             }
         };
     }
@@ -189,14 +179,10 @@ function compareArr(sequenceArr, playerArr) {
 }
 
 function gameOver() {
-    console.log('the game is over!!!!!!');
-    rmPlayerClicking();
     turn = null;
-    console.log(`player counter: ${playerCounter}`);
-    console.log(`highscore variable: ${highScore}`);
+    rmPlayerClicking();
     updateHighScore(playerCounter, highScore);
     render();
-    // playSound('err');   //FIX THIS
 }
 
 function updateCounter() {
@@ -206,7 +192,6 @@ function updateCounter() {
         counterEl.innerText = 0;
     } else {
         playerCounter++;
-        highScore++;
         counterEl.innerText = playerCounter;
         if (turn === null) {
             counterEl.innerText = 0;
@@ -215,9 +200,9 @@ function updateCounter() {
 }
 
 function updateHighScore(playerCounter, highScore) {
-    if(playerCounter >= highScore) {
+    console.log(playerCounter, highScore);
+    if(playerCounter >= highScoreEl.innerText) {
         highScoreEl.innerText = playerCounter;
-        highScore = playerCounter;
     }
 }
 
@@ -247,17 +232,42 @@ function playSound(name) {
 }
 
 function addPlayerClicking() {
-    console.log(`addPlayerClicking function fired`)
     boardEl.addEventListener('mousedown', handleClick);
+    boardEl.addEventListener('touchstart', handleClick);
 }
 
 function rmPlayerClicking() {
-    console.log(`removePlayerClicking function fired`)
     boardEl.removeEventListener('mousedown', handleClick);
+    boardEl.removeEventListener('touchstart', handleClick);
 }
 
+function getDiffLevel(arr) {
+    if (arr.length > 12) {
+        return 'vhard';
+    } else if (arr.length > 8) {
+        return 'hard';
+    } else if (arr.length > 4) {
+        return 'normal';
+    } else {
+        return 'easy';
+    }
+}
 
-// test();
+function getNumUpTo3() {
+  return Math.floor(Math.random() * 4);
+}
 
 /*----- eventListeners -----*/
 gameBtnEl.addEventListener('click', init);
+gameBtnEl.addEventListener('touchstart', init);
+
+
+
+//ideas
+// 2) celebration if new high score
+
+//bugs
+// 1) can break game if you click during comp sequence
+
+
+
