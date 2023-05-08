@@ -19,6 +19,7 @@ const sounds = {
     'yel': 'sounds/btn3.mp3',
     'blu': 'sounds/btn4.mp3',
     'err': 'sounds/error.mp3',
+    'atn': 'sounds/atn.mp3',
 }
 
 const DIFFICULTY = {
@@ -42,6 +43,7 @@ const gameBtnEl = document.querySelector('button');
 const messageEl = document.getElementById('message');
 const counterEl = document.getElementById('counter');
 const highScoreEl = document.getElementById('highScore');
+const ctrEl = document.getElementById('ctr');
 
 //Audio controls:
 // audioPlayer.volume = .5;
@@ -50,6 +52,7 @@ const highScoreEl = document.getElementById('highScore');
 
 
 /*----- functions -----*/
+/*----- RENDERING & FX functions -----*/
 
 //initialise all state and then call compSequence()
 function init() {
@@ -65,24 +68,9 @@ function init() {
     compTurn(sequenceArr);
 }
 
-function compTurn(arr) {
-    setTimeout(() => {
-        playerArr = [];
-        turn = -1;
-        render();
-        compSequence(arr)
-    }, 2000); 
-}
-
 function render(arr) {
     renderStates();
-    changeBgColor();
-    currentState(arr);
-}
-
-function currentState(arr) {
-    // console.log(arr);
-    // console.log(turn);
+    renderBgColor();
 }
 
 function renderStates() {
@@ -96,113 +84,17 @@ function renderStates() {
     }
 }
 
-function changeBgColor() {
+function renderBgColor() {
     if (turn === -1 || turn === 1) {
         document.querySelector("body").style.transitionDuration = "3s";
-        document.querySelector('body').style.backgroundColor = '#001700'
+        document.querySelector('body').style.backgroundColor = 'var(--green-bg)';
+        ctrEl.style.transitionDuration = "3s";
+        ctrEl.style.borderColor = 'var(--green-bg)';
     } else if (turn === null) {
         document.querySelector("body").style.transitionDuration = "1s";
-        document.querySelector('body').style.backgroundColor = '#A11800';
-    }
-}
-
-function compSequence(arr) {
-    //takes the sequence array, adds a new number
-    const newIdxItem = getNumUpTo3();
-    arr.push(newIdxItem);
-    //get difficulty level
-    const diffLevel = getDiffLevel(arr);
-    console.log(`difficulty level: ${diffLevel}`);
-    //renders the sequence for the play to visualise
-    playSequence(arr, diffLevel);
-    //change turn to player and calls render
-    setTimeout(() => {
-        turn = 1;
-        render();
-    }, DIFFICULTY[diffLevel].param1*arr.length); 
-    addPlayerClicking();
-    console.log(`difficulty level: ${diffLevel}`);
-}
-
-function playSequence(arr, diffLevel) {
-    let btnToVis;
-    diffLevel = getDiffLevel(arr);
-    console.log(`difficulty level: ${diffLevel}`);
-    for (let i=0; i<arr.length; i++) {
-        console.log(DIFFICULTY[diffLevel].param1);
-        setTimeout(function timer() {
-            btnToVis = document.getElementById(btnLookup[arr[i]].color);
-            playSound(btnToVis.id);
-            btnToVis.id = `${btnToVis.id}Clicked`;
-            console.log(diffLevel);
-            setTimeout(() => {
-                const trimmedId = btnToVis.id.slice(0, 3);
-                btnToVis.id = trimmedId;
-            }, DIFFICULTY[diffLevel].param2);
-        }, i * DIFFICULTY[diffLevel].param1);
-    }
-}
-
-
-function handleClick(evt) {
-    //guards to prevent improper clicking
-    if (evt.target.classList.value !== 'clrbtns') return;
-    //else if button is actually clicked...
-    addToPlayerArr(evt);
-    //compare array
-    compareArr(sequenceArr, playerArr);
-    //render FX
-    handleSound(evt);
-    renderBtnClr(evt);
-};
-
-function addToPlayerArr(evt) {
-    playerArr.push(arrLookup[evt.target.id]);
-}
-
-function compareArr(sequenceArr, playerArr) {
-    for (let i=0; i<sequenceArr.length; i++) {
-        if (sequenceArr[i] !== playerArr[i]) {
-            gameOver();
-            return;
-        } else if (sequenceArr[i] === playerArr[i]) {
-            if (sequenceArr.length !== playerArr.length) {
-                return;
-            } else if (i+1 === sequenceArr.length) {
-                updateCounter();
-                rmPlayerClicking();
-                compTurn(sequenceArr);
-            }
-        };
-    }
-    
-}
-
-function gameOver() {
-    turn = null;
-    rmPlayerClicking();
-    updateHighScore(playerCounter, highScore);
-    render();
-}
-
-function updateCounter() {
-    if (playerCounter+1 < sequenceArr.length) {
-        return;
-    } else if (turn === null || turn === -1) {
-        counterEl.innerText = 0;
-    } else {
-        playerCounter++;
-        counterEl.innerText = playerCounter;
-        if (turn === null) {
-            counterEl.innerText = 0;
-        }
-    }
-}
-
-function updateHighScore(playerCounter, highScore) {
-    console.log(playerCounter, highScore);
-    if(playerCounter >= highScoreEl.innerText) {
-        highScoreEl.innerText = playerCounter;
+        document.querySelector('body').style.backgroundColor = 'var(--red-go)';
+        ctrEl.style.transitionDuration = "1s";
+        ctrEl.style.borderColor = 'var(--red-go';
     }
 }
 
@@ -257,6 +149,132 @@ function getNumUpTo3() {
   return Math.floor(Math.random() * 4);
 }
 
+function runConfetti() {
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+    });
+}
+
+/*----- COMPUTER TURN functions -----*/
+//Runs the computer's turn, delays start by 2 sec
+function compTurn(arr) {
+    rmPlayerClicking();
+    playerArr = [];
+    turn = -1;
+    setTimeout(() => {
+        compSequence(arr);
+    }, 2000); 
+}
+
+//increases the comp array, calls Play Sequence, changes the turn
+function compSequence(arr) {
+    //takes the sequence array, adds a new number
+    const newIdxItem = getNumUpTo3();
+    arr.push(newIdxItem);
+    //get difficulty level
+    const diffLevel = getDiffLevel(arr);
+    //renders the sequence for the play to visualise
+    playSequence(arr, diffLevel);
+    //change turn to player and calls render
+    setTimeout(() => {
+        turn = 1;
+        render();
+        addPlayerClicking();
+    }, DIFFICULTY[diffLevel].param1*arr.length); 
+}
+
+function playSequence(arr, diffLevel) {
+    let btnToVis;
+    diffLevel = getDiffLevel(arr);
+    for (let i=0; i<arr.length; i++) {
+        console.log(DIFFICULTY[diffLevel].param1);
+        setTimeout(function timer() {
+            btnToVis = document.getElementById(btnLookup[arr[i]].color);
+            playSound(btnToVis.id);
+            btnToVis.id = `${btnToVis.id}Clicked`;
+            console.log(diffLevel);
+            setTimeout(() => {
+                const trimmedId = btnToVis.id.slice(0, 3);
+                btnToVis.id = trimmedId;
+            }, DIFFICULTY[diffLevel].param2);
+        }, i * DIFFICULTY[diffLevel].param1);
+    }
+}
+
+/*----- PLAYER TURN functions -----*/
+function handleClick(evt) {
+    //guards to prevent improper clicking
+    if (evt.target.classList.value !== 'clrbtns') return;
+    //else if button is actually clicked...
+    addToPlayerArr(evt);
+    //compare array
+    compareArr(sequenceArr, playerArr);
+    //render FX
+    handleSound(evt);
+    renderBtnClr(evt);
+};
+
+function addToPlayerArr(evt) {
+    playerArr.push(arrLookup[evt.target.id]);
+}
+
+function compareArr(sequenceArr, playerArr) {
+    for (let i=0; i<sequenceArr.length; i++) {
+        if (sequenceArr[i] !== playerArr[i]) {
+            gameOver();
+            return;
+        } else if (sequenceArr[i] === playerArr[i]) {
+            if (sequenceArr.length !== playerArr.length) {
+                return;
+            } else if (i+1 === sequenceArr.length) {
+                updateCounter();
+                compTurn(sequenceArr);
+            }
+        };
+    }
+    
+}
+
+function gameOver() {
+    turn = null;
+    rmPlayerClicking();
+    updateHighScore(playerCounter, highScore);
+    render();
+}
+
+/*----- SCORING functions -----*/
+function updateCounter() {
+    if (playerCounter+1 < sequenceArr.length) {
+        return;
+    } else if (turn === null || turn === -1) {
+        counterEl.innerText = 0;
+    } else {
+        playerCounter++;
+        counterEl.innerText = playerCounter;
+        if (turn === null) {
+            counterEl.innerText = 0;
+        }
+    }
+}
+
+function updateHighScore(playerCounter, highScore) {
+    if(playerCounter >= highScoreEl.innerText) {
+        highScoreEl.innerText = playerCounter;
+    } 
+    if (highScoreEl.innerText > 3) {
+        console.log('test for ben')
+        runConfetti();
+        messageEl.innerText = 'GREAT HIGH SCORE!';
+        setTimeout(() => {
+            render();
+        }, 3000);
+    }
+}
+
+
+
 /*----- eventListeners -----*/
 gameBtnEl.addEventListener('click', init);
 gameBtnEl.addEventListener('touchstart', init);
@@ -268,6 +286,5 @@ gameBtnEl.addEventListener('touchstart', init);
 
 //bugs
 // 1) can break game if you click during comp sequence
-
 
 
