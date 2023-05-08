@@ -20,6 +20,7 @@ const sounds = {
     'blu': 'sounds/btn4.mp3',
     'err': 'sounds/error.mp3',
     'atn': 'sounds/atn.mp3',
+    'bon': 'sounds/bon.mp3',
 }
 
 const DIFFICULTY = {
@@ -29,12 +30,19 @@ const DIFFICULTY = {
     'vhard': {param1: 1000*0.4, param2: 500*0.4}
 }
 
+const turnDelay = {
+    'first': {param1: 4500},
+    'next': {param1: 2000},
+}
+
 /*----- app's state (variables) -----*/
 let sequenceArr; // to be initialised to an empty array to hold the random sequence
 let turn;
 let playerArr;
 let playerCounter;
 let highScore;
+let td;
+let newHighScore;
 
 /*----- cached element references -----*/
 const boardEl = document.getElementById('board');
@@ -60,12 +68,17 @@ function init() {
     playerArr = [];
     turn = -1; //initialise to comp's turn
     playerCounter = 0;
+    newHighScore = false;
+    ///first turn things
     if (highScore === undefined) {
         highScore = 0;
-    } else {/*do nothing*/};
+        td = 'first';
+    } else {};
+    playSound('atn');
     updateCounter();
     render();
     compTurn(sequenceArr);
+    td = 'next';
 }
 
 function render(arr) {
@@ -79,13 +92,15 @@ function renderStates() {
         messageEl.innerText = 'Computer turn...'
     } else if (turn === 1) {
         messageEl.innerText = 'Player turn...'
+    } else if (newHighScore === true) {
+        messageEl.innerText = 'GAME OVER! But you got a NEW HIGH SCORE!'
     } else if (turn === null) {
         messageEl.innerText = 'GAME OVER! Click RESTART to try again!'
     }
 }
 
 function renderBgColor() {
-    if (turn === -1 || turn === 1) {
+    if (turn === -1 || turn === 1 || newHighScore === true) {
         document.querySelector("body").style.transitionDuration = "3s";
         document.querySelector('body').style.backgroundColor = 'var(--green-bg)';
         ctrEl.style.transitionDuration = "3s";
@@ -113,6 +128,8 @@ function handleSound(evt) {
     const clickedBtn = document.getElementById(`${evt.target.id}`)
     if (turn !== null) {
         playSound(clickedBtn.id);
+    } else if (newHighScore === true) {
+        playSound('bon');
     } else if (turn === null) {
         playSound('err');
     }
@@ -133,6 +150,7 @@ function rmPlayerClicking() {
     boardEl.removeEventListener('touchstart', handleClick);
 }
 
+// good candidate for a ternary?
 function getDiffLevel(arr) {
     if (arr.length > 12) {
         return 'vhard';
@@ -145,6 +163,7 @@ function getDiffLevel(arr) {
     }
 }
 
+//MOVE inline??
 function getNumUpTo3() {
   return Math.floor(Math.random() * 4);
 }
@@ -163,9 +182,11 @@ function compTurn(arr) {
     rmPlayerClicking();
     playerArr = [];
     turn = -1;
+    render();
+    console.log(turn);
     setTimeout(() => {
         compSequence(arr);
-    }, 2000); 
+    }, turnDelay[td].param1); 
 }
 
 //increases the comp array, calls Play Sequence, changes the turn
@@ -180,6 +201,7 @@ function compSequence(arr) {
     //change turn to player and calls render
     setTimeout(() => {
         turn = 1;
+        console.log(turn);
         render();
         addPlayerClicking();
     }, DIFFICULTY[diffLevel].param1*arr.length); 
@@ -189,12 +211,10 @@ function playSequence(arr, diffLevel) {
     let btnToVis;
     diffLevel = getDiffLevel(arr);
     for (let i=0; i<arr.length; i++) {
-        console.log(DIFFICULTY[diffLevel].param1);
         setTimeout(function timer() {
             btnToVis = document.getElementById(btnLookup[arr[i]].color);
             playSound(btnToVis.id);
             btnToVis.id = `${btnToVis.id}Clicked`;
-            console.log(diffLevel);
             setTimeout(() => {
                 const trimmedId = btnToVis.id.slice(0, 3);
                 btnToVis.id = trimmedId;
@@ -220,27 +240,31 @@ function addToPlayerArr(evt) {
     playerArr.push(arrLookup[evt.target.id]);
 }
 
+//BUG IN HERE - not identifying game over unless you get it wrong on the last turn or the first turn
+//get arr length of player arr; compare arr length i of player arr with arr i of seq arr
 function compareArr(sequenceArr, playerArr) {
-    for (let i=0; i<sequenceArr.length; i++) {
-        if (sequenceArr[i] !== playerArr[i]) {
-            gameOver();
-            return;
-        } else if (sequenceArr[i] === playerArr[i]) {
-            if (sequenceArr.length !== playerArr.length) {
-                return;
-            } else if (i+1 === sequenceArr.length) {
-                updateCounter();
-                compTurn(sequenceArr);
-            }
-        };
+    const idx = playerArr.length-1;
+    if (sequenceArr[idx] !== playerArr[idx]) {
+        gameOver();
+        return;
+    } else if (sequenceArr.length !== playerArr.length) {
+        return;
+    } else if (sequenceArr[idx] === playerArr[idx]) {
+        updateCounter();
+        compTurn(sequenceArr);
     }
-    
 }
 
 function gameOver() {
+    // if gameOver yields new high score, then do celebration, else red screen
+    updateHighScore(playerCounter);
+    console.log(`new high score is: ${newHighScore}`)
+    if (newHighScore === true) {
+        //celebrate
+        runConfetti();
+    }
     turn = null;
     rmPlayerClicking();
-    updateHighScore(playerCounter, highScore);
     render();
 }
 
@@ -259,21 +283,16 @@ function updateCounter() {
     }
 }
 
-function updateHighScore(playerCounter, highScore) {
-    if(playerCounter >= highScoreEl.innerText) {
-        highScoreEl.innerText = playerCounter;
+
+// NOT FULLY WORKING
+function updateHighScore(playerCounter) {
+    if(playerCounter > highScore) {
+        highScore = playerCounter;
+        highScoreEl.innerText = highScore;
+        newHighScore = true;
     } 
-    if (highScoreEl.innerText > 3) {
-        console.log('test for ben')
-        runConfetti();
-        messageEl.innerText = 'GREAT HIGH SCORE!';
-        setTimeout(() => {
-            render();
-        }, 3000);
-    }
+    return highScore;
 }
-
-
 
 /*----- eventListeners -----*/
 gameBtnEl.addEventListener('click', init);
@@ -282,9 +301,8 @@ gameBtnEl.addEventListener('touchstart', init);
 
 
 //ideas
-// 2) celebration if new high score
+// none at this time
 
 //bugs
-// 1) can break game if you click during comp sequence
-
+// none at this time
 
