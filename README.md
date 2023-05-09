@@ -1,22 +1,20 @@
 # simongame
 
-## Planning & Preparation
+Simon is a memory game! Each turn, the computer increases the length of a light sequence that the player has to remember. After this, the player has to recall the light sequence and play it back to the computer. Get one step wrong and its GAME OVER!
 
-### Identify and initialize state variables.
-count: 0 //resets each session
-high score: 0 //resets each session
-sequence - array that adds new choice each time randomly
-turn -  keeps track of who's turn it is
+# Technologies used:
+- HTML
+- CSS
+- vanilla JS
 
-
-
-Code the main render(), renderScores() & renderResults() functions.
-Code the click event listener, including the win logic.
-Update the renderResults() function to render the winner border.
-Code the countdown timer.
-
-
-
-
-
+# Credits:
 Sound Effect by <a href="https://pixabay.com/users/universfield-28281460/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=124464">UNIVERSFIELD</a> from <a href="https://pixabay.com/sound-effects//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=124464">Pixabay</a>
+
+Confetti from:
+<a href="https://confetti.js.org/more.html">tsParticles</a>
+
+# To play
+- Clone the repo and play locally on your computer
+
+# Enhancements
+None planned

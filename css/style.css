@@ -47,55 +47,49 @@
     grid-gap: 3vmin;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr;
-    /* border: 1px solid red; */
   }
 
   section > div {
     height: 40vmin;
     width: 40vmin;
-    /* border: 1px solid blue; */
+  }
+  
+  #red {
+    background-color: var(--redN);
+    border-radius: 100% 0 0 0;
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2;
+  }
+    
+  #grn {
+      background-color: var(--greenN);
+      border-radius: 0 100% 0 0;
+      grid-column: 3 / span 2;
+      grid-row: 1 / span 2;
+  }
+  
+  #yel {
+      background-color: var(--yellowN);
+      border-radius: 0 0 100% 0;
+      grid-column: 3 / span 2;
+      grid-row: 3 / span 2;
+  }
+  
+  #blu {
+      background-color: var(--blueN);
+      border-radius: 0 0 0 100%;
+      grid-column: 1 / span 2;
+      grid-row: 3 / span 2;
   }
 
-  
-    #red {
-      background-color: var(--redN);
-      border-radius: 100% 0 0 0;
+  #message {
       grid-column: 1 / span 2;
-      grid-row: 1 / span 2;
-    }
-    
-    #grn {
-        background-color: var(--greenN);
-        border-radius: 0 100% 0 0;
-        grid-column: 3 / span 2;
-        grid-row: 1 / span 2;
-    }
-    
-    #yel {
-        background-color: var(--yellowN);
-        border-radius: 0 0 100% 0;
-        grid-column: 3 / span 2;
-        grid-row: 3 / span 2;
-    }
-    
-    #blu {
-        background-color: var(--blueN);
-        border-radius: 0 0 0 100%;
-        grid-column: 1 / span 2;
-        grid-row: 3 / span 2;
-    }
-
-    #message {
-        grid-column: 1 / span 2;
-        grid-row: 3 / span 2;
-    }
-    
-    #board > .clrbtns:hover {
-      /* transform: scale(0.99);
-      transition: transform 50ms ease-in;
-      transform: perspective(500px) translateZ(-10px); */
-      cursor: pointer;
-    }
+      grid-row: 3 / span 2;
+  }
+  
+  #board > .clrbtns:hover {
+    cursor: pointer;
+  }
     
   #red:hover {
     background-color: var(--redD);
@@ -171,9 +165,9 @@
     font-size: 3vmin;
     width: 18vmin;
     height: 6vmin;
-    background-color: darkgrey;
+    background-color: var(--green-bg);
     color: var(--white);
-    border: 1px solid grey;
+    border: 1px solid ;
     border-radius: 1vmin 1vmin 1vmin 1vmin;
   }
   
@@ -228,10 +222,7 @@
     }
 
 }
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {}
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {}
+
 /* Large devices (laptops/desktops, 992px and up) */
 @media only screen and (min-width: 992px) {
     section > div {
@@ -244,5 +235,3 @@
         margin-top: 0;
       }
 }
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {}
